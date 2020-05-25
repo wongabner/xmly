@@ -9,7 +9,7 @@ import {
 
 import BottomTabs from './BottomTabs';
 import Detail from '@/pages/Detail';
-import {Platform, StyleSheet} from 'react-native';
+import {Platform, StyleSheet, StatusBar} from 'react-native';
 
 export type RootStackParamList = {
   BottomTabs: {
@@ -36,7 +36,9 @@ class Navigator extends Component {
             cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
             gestureEnabled: true,
             gestureDirection: 'horizontal',
+            headerStatusBarHeight: StatusBar.currentHeight,
             headerStyle: {
+              // backgroundColor: 'red',
               ...Platform.select({
                 android: {
                   elevation: 0,
@@ -46,7 +48,13 @@ class Navigator extends Component {
               }),
             },
           }}>
-          <Stack.Screen name="BottomTabs" component={BottomTabs} />
+          <Stack.Screen
+            name="BottomTabs"
+            component={BottomTabs}
+            options={{
+              headerTitle: '首页',
+            }}
+          />
           <Stack.Screen
             options={{headerTitle: '详情页'}}
             name="Detail"

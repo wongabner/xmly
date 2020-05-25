@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Home from '@/pages/Home';
 import Listen from '@/pages/Listen';
 import Found from '@/pages/Found';
 import Account from '@/pages/Account';
 import {RouteProp, TabNavigationState} from '@react-navigation/native';
 import {RootStackNavigation, RootStackParamList} from '.';
+import Icon from '@/assets/iconfont/index';
+import HomeTabs from './HomeTabs';
+
 export type BottomTabParamList = {
-  Home: undefined;
+  HomeTabs: undefined;
   Listen: undefined;
   Found: undefined;
   Account: undefined;
@@ -24,9 +26,9 @@ interface IProps {
   route: Route;
 }
 function getHeaderTitle(route: Route) {
-  const routename = route.state ? route.state.routes[route.state.index].name : route.params?.screen || 'Home';
+  const routename = route.state ? route.state.routes[route.state.index].name : route.params?.screen || 'HomeTabs';
   switch(routename) {
-    case 'Home':
+    case 'HomeTabs':
       return '首页';
     case 'Listen':
       return '我听';
@@ -54,10 +56,11 @@ export default class BottomTabs extends Component<IProps> {
           activeTintColor: '#f86442',
         }}>
         <Tab.Screen
-          name="Home"
-          component={Home}
+          name="HomeTabs"
+          component={HomeTabs}
           options={{
             tabBarLabel: '首页',
+            tabBarIcon: ({color,size})=> <Icon name="icon-shouye" color={color} size={size}/>
           }}
         />
         <Tab.Screen
@@ -65,6 +68,7 @@ export default class BottomTabs extends Component<IProps> {
           component={Listen}
           options={{
             tabBarLabel: '我听',
+            tabBarIcon: ({color,size})=> <Icon name="icon-shoucang" color={color} size={size}/>
           }}
         />
         <Tab.Screen
@@ -72,6 +76,7 @@ export default class BottomTabs extends Component<IProps> {
           component={Found}
           options={{
             tabBarLabel: '发现',
+            tabBarIcon: ({color,size})=> <Icon name="icon-faxian" color={color} size={size}/>
           }}
         />
         <Tab.Screen
@@ -79,6 +84,7 @@ export default class BottomTabs extends Component<IProps> {
           component={Account}
           options={{
             tabBarLabel: '我的',
+            tabBarIcon: ({color,size})=> <Icon name="icon-user" color={color} size={size}/>
           }}
         />
       </Tab.Navigator>
