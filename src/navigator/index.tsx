@@ -1,28 +1,28 @@
-import React, {Component} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import React, { Component } from 'react'
+import { NavigationContainer } from '@react-navigation/native'
 import {
   createStackNavigator,
   StackNavigationProp,
   HeaderStyleInterpolators,
-  CardStyleInterpolators,
-} from '@react-navigation/stack';
+  CardStyleInterpolators
+} from '@react-navigation/stack'
 
-import BottomTabs from './BottomTabs';
-import Detail from '@/pages/Detail';
-import {Platform, StyleSheet, StatusBar} from 'react-native';
+import BottomTabs from './BottomTabs'
+import Detail from '@/pages/Detail'
+import { Platform, StyleSheet, StatusBar } from 'react-native'
 
 export type RootStackParamList = {
   BottomTabs: {
-    screen?: string;
-  };
+    screen?: string
+  }
   Detail: {
-    id: number;
-  };
-};
+    id: number
+  }
+}
 
-export type RootStackNavigation = StackNavigationProp<RootStackParamList>;
+export type RootStackNavigation = StackNavigationProp<RootStackParamList>
 
-let Stack = createStackNavigator<RootStackParamList>();
+let Stack = createStackNavigator<RootStackParamList>()
 
 class Navigator extends Component {
   render() {
@@ -42,28 +42,28 @@ class Navigator extends Component {
               ...Platform.select({
                 android: {
                   elevation: 0,
-                  borderBottomWidth: StyleSheet.hairlineWidth,
+                  borderBottomWidth: StyleSheet.hairlineWidth
                 },
-                ios: {},
-              }),
-            },
+                ios: {}
+              })
+            }
           }}>
           <Stack.Screen
             name="BottomTabs"
             component={BottomTabs}
             options={{
-              headerTitle: '首页',
+              headerTitle: '首页'
             }}
           />
           <Stack.Screen
-            options={{headerTitle: '详情页'}}
+            options={{ headerTitle: '详情页' }}
             name="Detail"
             component={Detail}
           />
         </Stack.Navigator>
       </NavigationContainer>
-    );
+    )
   }
 }
 
-export default Navigator;
+export default Navigator

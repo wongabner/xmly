@@ -1,62 +1,68 @@
-import {Model, Effect} from 'dva-core-ts';
-import {Reducer} from 'react';
+import { Model, Effect } from 'dva-core-ts'
+import { Reducer } from 'react'
+import axios from 'axios'
+
+// 轮播图
+const CAROUSEL_URL = '/bear/carousel'
+
+export interface ICarousel {
+  id: string
+  image: string
+  colors: [string, string]
+}
 
 export interface HomeState {
-  num: number;
+  carousels: ICarousel[]
 }
-interface payloadA {
-  num: number;
-}
+
 export interface HomeAction {
-  type: string;
-  payload?: any;
+  type: string
+  payload?: any
 }
 
 interface homeModel extends Model {
-  namespace: 'home';
-  state: HomeState;
+  namespace: 'home'
+  state: HomeState
   reducers: {
-    add: Reducer<HomeState, HomeAction>;
-  };
+    setState: Reducer<HomeState, HomeAction>
+  }
   effects: {
-    asyncAdd: Effect;
-  };
+    fetchCarousels: Effect
+  }
 }
 
 const initialState = {
-  num: 1,
-};
-
-const delay = (timout: number) => {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(5);
-    }, timout);
-  });
-};
+  carousels: []
+}
 
 const homeModel: homeModel = {
   namespace: 'home',
   state: initialState,
   reducers: {
-    add(state = initialState, action) {
+    setState(state = initialState, action) {
       return {
         ...state,
-        num: state.num + action.payload.num,
-      };
-    },
+        ...action.payload
+      }
+    }
   },
   effects: {
-    *asyncAdd(action, {call, put}) {
-      let num = yield call(delay, 3000);
-      yield put({
-        type: 'add',
-        payload: {
-          num,
-        },
-      });
-    },
-  },
-};
+    *fetchCarousels(action, { call, put }) {
+      try {
+        const { data } = yield call(axios.get, CAROUSEL_URL)
+        // console.log(data,'轮播图数据data')
 
-export default homeModel;
+        yield put({
+          type: 'setState',
+          payload: {
+            carousels: data
+          }
+        })
+      } catch (err) {
+        console.log(err, 'catch err')
+      }
+    }
+  }
+}
+
+export default homeModel

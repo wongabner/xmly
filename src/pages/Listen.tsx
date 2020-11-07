@@ -1,18 +1,18 @@
-import React, {Component} from 'react';
-import {Text, View, Button} from 'react-native';
-import {RootStackNavigation} from '@/navigator';
+import React, { Component } from 'react'
+import { Text, View, Button } from 'react-native'
+import { RootStackNavigation } from '@/navigator'
 
 interface IProps {
-  navigation: RootStackNavigation;
+  navigation: RootStackNavigation
 }
 
 export default class Listen extends Component<IProps> {
   onPress = () => {
-    const {navigation} = this.props;
+    const { navigation } = this.props
     navigation.navigate('Detail', {
-      id: 100,
-    });
-  };
+      id: 100
+    })
+  }
 
   render() {
     return (
@@ -20,6 +20,6 @@ export default class Listen extends Component<IProps> {
         <Text> Listen </Text>
         <Button title="跳转到详情页" onPress={this.onPress} />
       </View>
-    );
+    )
   }
 }
