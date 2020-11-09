@@ -1,7 +1,7 @@
 import { Model, Effect } from 'dva-core-ts'
 import { Reducer } from 'react'
 import axios from 'axios'
-import {RootState} from '.';
+import { RootState } from '.'
 
 // 轮播图
 const CAROUSEL_URL = '/carousel'
@@ -12,28 +12,36 @@ export interface ICarousel {
 }
 
 // 猜你喜欢
-const GUESS_URL = '/guess';
+const GUESS_URL = '/guess'
 export interface IGuess {
-  id: string;
-  title: string;
-  image: string;
+  id: string
+  title: string
+  image: string
 }
 
 // 首页列表
-const CHANNEL_URL = '/channel';
+const CHANNEL_URL = '/channel'
 export interface IChannel {
-  id: string;
-  title: string;
-  image: string;
-  remark: string;
-  played: number;
-  playing: number;
+  id: string
+  title: string
+  image: string
+  remark: string
+  played: number
+  playing: number
+}
+export interface IPagination {
+  current: number
+  total: number
+  hasMore: boolean
 }
 
 export interface HomeState {
   carousels: ICarousel[]
+  activeCarouselIndex: number // 当前轮播图的下标
+  gradientVisible: boolean // 渐变色组件是否显示的状态
   guess: IGuess[]
   channels: IChannel[]
+  pagination: IPagination
 }
 
 export interface HomeAction {
@@ -55,9 +63,22 @@ interface homeModel extends Model {
 }
 
 const initialState: HomeState = {
+  // 轮播图数据
   carousels: [],
+  // 当前轮播图的下标
+  activeCarouselIndex: 0,
+  // 渐变色组件是否显示的状态
+  gradientVisible: true,
+  // 猜你喜欢数据
   guess: [],
+  // 列表数据
   channels: [],
+  //分页信息
+  pagination: {
+    current: 1,
+    total: 0,
+    hasMore: true
+  }
 }
 
 const homeModel: homeModel = {
@@ -90,54 +111,56 @@ const homeModel: homeModel = {
         console.log(err, 'catch err')
       }
     },
+
     /**
      * 请求猜你喜欢数据
      */
-    *fetchGuess(_, {call, put}) {
-      const {data} = yield call(axios.get, GUESS_URL);
+    *fetchGuess(_, { call, put }) {
+      const { data } = yield call(axios.get, GUESS_URL)
       yield put({
         type: 'setState',
         payload: {
-          guess: data,
-        },
-      });
+          guess: data
+        }
+      })
     },
+
     /**
      * 请求列表数据
      */
-    *fetchChannels({callback, payload}, {call, put, select}) {
-      // const {channels, pagination} = yield select(
-      //   (state: RootState) => state.home,
-      // );
-      let page = 1;
-      // if (payload && payload.loadMore) {
-      //   page = pagination.current + 1;
-      // }
-      const {data} = yield call(axios.get, CHANNEL_URL, {
+    *fetchChannels({ callback, payload }, { call, put, select }) {
+      const { channels, pagination } = yield select(
+        (state: RootState) => state.home
+      )
+      let page = 1
+      if (payload && payload.loadMore) {
+        page = pagination.current + 1
+      }
+      const { data } = yield call(axios.get, CHANNEL_URL, {
         params: {
-          page,
-        },
-      });
-      let newChannels = data.results;
-      // if (payload && payload.loadMore) {
-      //   newChannels = channels.concat(newChannels);
-      // }
+          page
+        }
+      })
+      let newChannels = data.results
+      if (payload && payload.loadMore) {
+        newChannels = channels.concat(newChannels)
+      }
 
       yield put({
         type: 'setState',
         payload: {
           channels: newChannels,
-          // pagination: {
-          //   current: data.pagination.current,
-          //   total: data.pagination.total,
-          //   hasMore: newChannels.length < data.pagination.total,
-          // },
-        },
-      });
+          pagination: {
+            current: data.pagination.current,
+            total: data.pagination.total,
+            hasMore: newChannels.length < data.pagination.total
+          }
+        }
+      })
       if (typeof callback === 'function') {
-        callback();
+        callback()
       }
-    },
+    }
   }
 }
 

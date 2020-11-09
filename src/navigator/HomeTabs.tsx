@@ -1,14 +1,24 @@
 import React, { Component } from 'react'
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+import { StyleSheet } from 'react-native'
+import {
+  createMaterialTopTabNavigator,
+  MaterialTopTabBarProps
+} from '@react-navigation/material-top-tabs'
 import Home from '@/pages/Home'
+import TopTabBarWrapper from '@/pages/views/TopTabBarWrapper'
 
 const Tab = createMaterialTopTabNavigator()
 
-export default class HomeTabs extends Component {
+class HomeTabs extends Component {
+  renderTabBar = (props: MaterialTopTabBarProps) => {
+    return <TopTabBarWrapper {...props} />
+  }
   render() {
     return (
       <Tab.Navigator
         lazy={true}
+        tabBar={this.renderTabBar}
+        sceneContainerStyle={styles.sceneContainer}
         tabBarOptions={{
           scrollEnabled: true,
           tabStyle: {
@@ -34,47 +44,15 @@ export default class HomeTabs extends Component {
           component={Home}
           options={{ tabBarLabel: '推荐1' }}
         />
-        <Tab.Screen
-          name="Home12"
-          component={Home}
-          options={{ tabBarLabel: '推荐2' }}
-        />
-        <Tab.Screen
-          name="Home13"
-          component={Home}
-          options={{ tabBarLabel: '推荐3' }}
-        />
-        <Tab.Screen
-          name="Home14"
-          component={Home}
-          options={{ tabBarLabel: '推荐4' }}
-        />
-        <Tab.Screen
-          name="Home15"
-          component={Home}
-          options={{ tabBarLabel: '推荐5' }}
-        />
-        <Tab.Screen
-          name="Home16"
-          component={Home}
-          options={{ tabBarLabel: '推荐6' }}
-        />
-        <Tab.Screen
-          name="Home17"
-          component={Home}
-          options={{ tabBarLabel: '推荐7' }}
-        />
-        <Tab.Screen
-          name="Home18"
-          component={Home}
-          options={{ tabBarLabel: '推荐8' }}
-        />
-        <Tab.Screen
-          name="Home19"
-          component={Home}
-          options={{ tabBarLabel: '推荐9' }}
-        />
       </Tab.Navigator>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  sceneContainer: {
+    backgroundColor: 'transparent'
+  }
+})
+
+export default HomeTabs

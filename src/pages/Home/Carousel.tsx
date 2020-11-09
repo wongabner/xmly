@@ -7,24 +7,40 @@ import SnapCarrousel, {
 } from 'react-native-snap-carousel'
 import ICarousel from '@/models/home'
 import { viewportWidth, wp, hp } from '@/utils'
+import { connect, ConnectedProps } from 'react-redux'
+import { RootState } from '@/models/index'
 
-interface IProps {
-  data: ICarousel[]
+const mapStateToProps = ({ home }: RootState) => {
+  return {
+    data: home.carousels,
+    activeCarouselIndex: home.activeCarouselIndex
+  }
 }
+
+const connector = connect(mapStateToProps)
+
+type ModelState = ConnectedProps<typeof connector>
+
+interface IProps extends ModelState {}
 
 const sliderWidth = viewportWidth
 
 const sideWidth = wp(90)
-const sideHeight = hp(26)
+export const sideHeight = hp(26)
 const itemWidth = sideWidth + wp(2) * 2
 
 class Carousel extends React.Component<IProps> {
   state = {
     activeSlide: 0
   }
+  // 切换轮播图
   onSnapToItem = (index: number) => {
-    this.setState({
-      activeSlide: index
+    const { dispatch } = this.props
+    dispatch({
+      type: 'home/setState',
+      payload: {
+        activeCarouselIndex: index
+      }
     })
   }
 
@@ -46,15 +62,14 @@ class Carousel extends React.Component<IProps> {
   }
 
   get pagination() {
-    const { data } = this.props
-    const { activeSlide } = this.state
+    const { data, activeCarouselIndex } = this.props
     return (
       <View style={styles.paginationWrapper}>
         <Pagination
           containerStyle={styles.paginationContainer}
           dotContainerStyle={styles.dotContainer}
           dotStyle={styles.dot}
-          activeDotIndex={activeSlide}
+          activeDotIndex={activeCarouselIndex}
           dotsLength={data.length}
           inactiveDotScale={0.7}
           inactiveDotOpacity={0.4}
@@ -66,7 +81,7 @@ class Carousel extends React.Component<IProps> {
   render() {
     const { data } = this.props
     return (
-      <View style={styles.carouselWrap}>
+      <View>
         <SnapCarrousel
           data={data}
           renderItem={this.renderItem}
@@ -84,10 +99,6 @@ class Carousel extends React.Component<IProps> {
 }
 
 const styles = StyleSheet.create({
-  carouselWrap: {
-    marginTop: 5,
-  },
-
   imageContainer: {
     width: itemWidth,
     height: sideHeight,
@@ -122,4 +133,4 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,.92)'
   }
 })
-export default Carousel
+export default connector(Carousel)

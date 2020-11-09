@@ -25,10 +25,8 @@ interface IProps {
   navigation: RootStackNavigation;
   route: Route;
 }
-function getHeaderTitle(route: Route) {
-  console.log(route,'route')
-  const routename = route.state ? route.state.routes[route.state.index].name : route.params?.screen || 'HomeTabs';
-  switch (routename) {
+function getHeaderTitle(routeName: string) {
+  switch (routeName) {
     case 'HomeTabs':
       return '首页';
     case 'Listen':
@@ -43,11 +41,30 @@ function getHeaderTitle(route: Route) {
 }
 
 export default class BottomTabs extends Component<IProps> {
+  componentDidMount() {
+    this.setOptions();
+  }
+
   componentDidUpdate() {
-    const { navigation, route } = this.props;
-    navigation.setOptions({
-      headerTitle: getHeaderTitle(route),
-    });
+    this.setOptions();
+  }
+
+  setOptions = () => {
+    const {navigation, route} = this.props;
+    const routeName = route.state
+    ? route.state.routes[route.state.index].name
+    : route.params?.screen || 'HomeTabs';
+    if(routeName === 'HomeTabs') {
+      navigation.setOptions({
+        headerTransparent: true,
+        headerTitle: '',
+      });
+    } else {
+      navigation.setOptions({
+        headerTransparent: false,
+        headerTitle: getHeaderTitle(routeName),
+      });
+    }
   }
 
   render() {
