@@ -66,7 +66,7 @@ class Carousel extends React.Component<IProps> {
   render() {
     const { data } = this.props
     return (
-      <View>
+      <View style={styles.carouselWrap}>
         <SnapCarrousel
           data={data}
           renderItem={this.renderItem}
@@ -84,6 +84,10 @@ class Carousel extends React.Component<IProps> {
 }
 
 const styles = StyleSheet.create({
+  carouselWrap: {
+    marginTop: 5,
+  },
+
   imageContainer: {
     width: itemWidth,
     height: sideHeight,
