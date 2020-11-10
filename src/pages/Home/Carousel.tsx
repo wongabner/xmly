@@ -21,7 +21,9 @@ const connector = connect(mapStateToProps)
 
 type ModelState = ConnectedProps<typeof connector>
 
-interface IProps extends ModelState {}
+interface IProps extends ModelState {
+  namespace: string
+}
 
 const sliderWidth = viewportWidth
 
@@ -35,9 +37,9 @@ class Carousel extends React.Component<IProps> {
   }
   // 切换轮播图
   onSnapToItem = (index: number) => {
-    const { dispatch } = this.props
+    const { dispatch, namespace } = this.props
     dispatch({
-      type: 'home/setState',
+      type: namespace + '/setState',
       payload: {
         activeCarouselIndex: index
       }

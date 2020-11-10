@@ -6,14 +6,53 @@ import {
 } from '@react-navigation/material-top-tabs'
 import Home from '@/pages/Home'
 import TopTabBarWrapper from '@/pages/views/TopTabBarWrapper'
+import { connect, ConnectedProps } from 'react-redux'
+import { RootState } from '@/models'
+import { ICategory } from '@/models/category'
+import { createHomeModel } from '@/config/dva'
 
-const Tab = createMaterialTopTabNavigator()
+export type HomeParamList = {
+  [key: string]: {
+    namespace: string
+  }
+}
 
-class HomeTabs extends Component {
+const Tab = createMaterialTopTabNavigator<HomeParamList>()
+
+const mapStateToProps = ({ category }: RootState) => {
+  return {
+    myCategorys: category.myCategorys
+  }
+}
+
+const connector = connect(mapStateToProps)
+
+type ModelState = ConnectedProps<typeof connector>
+
+interface IProps extends ModelState {}
+
+class HomeTabs extends Component<IProps> {
   renderTabBar = (props: MaterialTopTabBarProps) => {
     return <TopTabBarWrapper {...props} />
   }
+
+  renderScreen = (item: ICategory) => {
+    createHomeModel(item.id)
+    return (
+      <Tab.Screen
+        key={item.id}
+        name={item.id}
+        component={Home}
+        options={{ tabBarLabel: item.name }}
+        initialParams={{
+          namespace: item.id
+        }}
+      />
+    )
+  }
+
   render() {
+    const { myCategorys } = this.props
     return (
       <Tab.Navigator
         lazy={true}
@@ -22,28 +61,20 @@ class HomeTabs extends Component {
         tabBarOptions={{
           scrollEnabled: true,
           tabStyle: {
-            width: 70
+            width: 80,
+            padding: 0
           },
           indicatorStyle: {
             height: 4,
             width: 20,
-            marginLeft: 25,
+            marginLeft: 30,
             borderRadius: 2,
             backgroundColor: '#f86442'
           },
           activeTintColor: '#f86442',
           inactiveTintColor: '#333'
         }}>
-        <Tab.Screen
-          name="Home"
-          component={Home}
-          options={{ tabBarLabel: '推荐' }}
-        />
-        <Tab.Screen
-          name="Home1"
-          component={Home}
-          options={{ tabBarLabel: '推荐1' }}
-        />
+        {myCategorys.map(this.renderScreen)}
       </Tab.Navigator>
     )
   }
@@ -55,4 +86,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default HomeTabs
+export default connector(HomeTabs)

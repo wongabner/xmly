@@ -17,8 +17,8 @@ const connector = connect(mapStateToProps)
 type ModelState = ConnectedProps<typeof connector>
 
 interface IProps extends ModelState {
-  // namespace: string;
-  // goAlbum: (item: IGuess) => void;
+  namespace: string
+  goAlbum: (item: IGuess) => void
 }
 
 class Guess extends React.Component<IProps> {
@@ -27,18 +27,19 @@ class Guess extends React.Component<IProps> {
   }
 
   fetch = () => {
-    const { dispatch } = this.props
+    const { dispatch, namespace } = this.props
     dispatch({
-      type: 'home/fetchGuess'
+      type: namespace + '/fetchGuess'
     })
   }
 
   renderItem = ({ item }: { item: IGuess }) => {
+    const { goAlbum } = this.props
     return (
       <Touchable
         style={styles.item}
         onPress={() => {
-          alert('点击')
+          goAlbum(item)
         }}>
         <Image source={{ uri: item.image }} style={styles.image} />
         <Text numberOfLines={2}>{item.title}</Text>

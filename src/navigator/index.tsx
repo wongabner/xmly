@@ -8,13 +8,16 @@ import {
 } from '@react-navigation/stack'
 
 import BottomTabs from './BottomTabs'
+import Category from '@/pages/Category'
 import Detail from '@/pages/Detail'
-import { Platform, StyleSheet, StatusBar } from 'react-native'
+import { Platform, StyleSheet, StatusBar, View, Text } from 'react-native'
+import Icon from '@/assets/iconfont/index'
 
 export type RootStackParamList = {
   BottomTabs: {
     screen?: string
   }
+  Category: undefined
   Detail: {
     id: number
   }
@@ -36,9 +39,17 @@ class Navigator extends Component {
             cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
             gestureEnabled: true,
             gestureDirection: 'horizontal',
-            headerStatusBarHeight: StatusBar.currentHeight,
+            ...Platform.select({
+              android: {
+                headerStatusBarHeight: StatusBar.currentHeight
+              }
+            }),
+            headerBackTitleVisible: false,
+            headerBackImage: () => (
+              <Icon name="icon-back" size={20} style={{ marginLeft: 5 }} />
+            ),
+            headerTintColor: '#333',
             headerStyle: {
-              // backgroundColor: 'red',
               ...Platform.select({
                 android: {
                   elevation: 0,
@@ -53,6 +64,13 @@ class Navigator extends Component {
             component={BottomTabs}
             options={{
               headerTitle: '首页'
+            }}
+          />
+          <Stack.Screen
+            name="Category"
+            component={Category}
+            options={{
+              headerTitle: '分类'
             }}
           />
           <Stack.Screen

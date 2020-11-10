@@ -14,15 +14,23 @@ import { RootState } from '@/models'
 import Carousel, { sideHeight } from '@/pages/Home/Carousel'
 import Guess from '@/pages/Home/Guess'
 import ChannelItem from './ChannelItem'
-import { IChannel } from '@/models/home'
+import { IChannel, IGuess } from '@/models/home'
+import { RouteProp } from '@react-navigation/native'
+import { HomeParamList } from '@/navigator/HomeTabs'
 
-const mapStateToProps = ({ home, loading }: RootState) => {
+const mapStateToProps = (
+  state: RootState,
+  { route }: { route: RouteProp<HomeParamList, string> }
+) => {
+  const { namespace } = route.params
+  const modelState = state[namespace]
   return {
-    carousels: home.carousels,
-    channels: home.channels,
-    hasMore: home.pagination.hasMore,
-    gradientVisible: home.gradientVisible,
-    loading: loading.effects['home/fetchChannels']
+    namespace,
+    carousels: modelState.carousels,
+    channels: modelState.channels,
+    hasMore: modelState.pagination.hasMore,
+    gradientVisible: modelState.gradientVisible,
+    loading: state.loading.effects[namespace + '/fetchChannels']
   }
 }
 
@@ -43,13 +51,18 @@ class Home extends PureComponent<IProps, IState> {
     refreshing: false
   }
   componentDidMount() {
-    const { dispatch } = this.props
+    const { dispatch, namespace } = this.props
     dispatch({
-      type: 'home/fetchCarousels'
+      type: namespace + '/fetchCarousels'
     })
     dispatch({
-      type: 'home/fetchChannels'
+      type: namespace + '/fetchChannels'
     })
+  }
+
+  goAlbum = (data: IChannel | IGuess) => {
+    const { navigation } = this.props
+    // navigation.navigate('Album', {item: data});
   }
 
   onPress = (data: IChannel) => {
@@ -67,9 +80,9 @@ class Home extends PureComponent<IProps, IState> {
       refreshing: true
     })
     // 2. 获取数据
-    const { dispatch } = this.props
+    const { dispatch, namespace } = this.props
     dispatch({
-      type: 'home/fetchChannels',
+      type: namespace + '/fetchChannels',
       callback: () => {
         // 3. 修改刷新状态为false
         this.setState({
@@ -82,10 +95,10 @@ class Home extends PureComponent<IProps, IState> {
   // 加载更多
   onEndReached = () => {
     console.log('--加载更多')
-    const { dispatch, loading, hasMore } = this.props
+    const { dispatch, loading, hasMore, namespace } = this.props
     if (loading || !hasMore) return
     dispatch({
-      type: 'home/fetchChannels',
+      type: namespace + '/fetchChannels',
       payload: {
         loadMore: true
       }
@@ -99,10 +112,10 @@ class Home extends PureComponent<IProps, IState> {
   onScroll = ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetY = nativeEvent.contentOffset.y
     let newGradientVisible = offsetY < sideHeight
-    const { dispatch, gradientVisible } = this.props
+    const { dispatch, gradientVisible, namespace } = this.props
     if (gradientVisible !== newGradientVisible) {
       dispatch({
-        type: 'home/setState',
+        type: namespace + '/setState',
         payload: {
           gradientVisible: newGradientVisible
         }
@@ -111,12 +124,12 @@ class Home extends PureComponent<IProps, IState> {
   }
 
   get header() {
-    const { carousels } = this.props
+    const { namespace } = this.props
     return (
       <View>
-        <Carousel />
+        <Carousel namespace={namespace} />
         <View style={styles.background}>
-          <Guess />
+          <Guess namespace={namespace} goAlbum={this.goAlbum} />
         </View>
       </View>
     )
